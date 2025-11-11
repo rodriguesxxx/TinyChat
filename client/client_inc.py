@@ -56,21 +56,7 @@ def solicitar_input(prompt_text: str) -> str:
 
 
 async def loop_entrada_e_envio(aio_sess: aiohttp.ClientSession, base_url: str, session_code: str, token: str):
-    loop = asyncio.get_event_loop()
-    print("Digite suas mensagens. Pressione Ctrl+C para sair.")
-    while True:
-        try:
-            text = await loop.run_in_executor(None, solicitar_input, "")
-        except (EOFError, KeyboardInterrupt):
-            print("\nSaindo...")
-            return
-        text = text.strip()
-        if not text:
-            continue
-        try:
-            await enviar_mensagem(aio_sess, base_url, session_code, token, text)
-        except Exception as e:
-            print(f"Erro ao enviar mensagem: {e}")
+    pass
 
 
 async def verificar_mensagens(aio_sess: aiohttp.ClientSession, base_url: str, session_code: str, stop_event: asyncio.Event):
@@ -162,6 +148,7 @@ async def principal():
                 print(f"Erro ao conectar: {e}")
                 continue
 
+        # iniciar tarefas de verificação e entrada
         stop_event = asyncio.Event()
         poll_task = asyncio.create_task(verificar_mensagens(aio_sess, base_url, session_code, stop_event))
         send_task = asyncio.create_task(loop_entrada_e_envio(aio_sess, base_url, session_code, token))
